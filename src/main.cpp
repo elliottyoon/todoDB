@@ -4,30 +4,30 @@
 #include <string>
 
 int main(int argc, char **argv) {
-    sqlite3 *db;
-    char *zErrMsg = 0; 
-    int rc;
+    // sqlite3 *db;
+    // char *zErrMsg = 0; 
+    // int rc;
 
     if ( argc!=1 ){
         fprintf(stderr, "Usage: %s", argv[0]);
         return(1);
     }
 
+    sqlite3 *db;
     std::string filename = "db_items.db";
-    rc = sqlite3_open(&filename[0], &db);
-    if( rc ){
-        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-        sqlite3_close(db);
-        return(1);
-    }
+    commands::SQLiteWrapper sql{};
+    sql.Init(filename);
+
+
+    std::string q("SELECT * FROM exams;");
+    commands::SQLiteWrapper::executeQuery(sql.db(), q, commands::callback);
 
     std::string query;
     std::istringstream iss("");
-    std::vector<std::string> command_args;
     while ((std::cout << ">>> ") && std::getline(std::cin, query)) {
         /** Parse command arguments, splitting on spaces. */
         std::istringstream(query).swap(iss);
-        command_args.clear();
+        std::vector<std::string> command_args{};
         std::string arg;
         while(std::getline(iss, arg, ' ')) {
             command_args.emplace_back(std::move(arg));
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
         }
         else if (command_args[0] == "new") 
         {
-            commands::Creator c{};
+            commands::Creator c(sql.db(), std::move(command_args));
             c.accept(exec);
         }
         else if (command_args[0] == "list") 
@@ -85,9 +85,5 @@ int main(int argc, char **argv) {
 
         /** Invalid command */
     }
-
-
-    // maybe wrap this in a function or something vvvv
-    sqlite3_close(db);
     return 0;
 };

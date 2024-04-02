@@ -9,6 +9,15 @@
 #include "callbacks.cpp"
 
 namespace commands {
+    void SQLiteWrapper::executeQuery(sqlite3 * const db, std::string &query, int (*callback)(void *, int, char **, char **)) {
+        char* zErrMsg = 0;
+        int rc = sqlite3_exec(db, &query[0], callback, 0, &zErrMsg);
+        if( rc!=SQLITE_OK ){
+            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        }   
+    }
+
     static inline void syntaxError() { std::cout << "Invalid command. Type `help` for a list of valid commands" << std::endl; }
 
     /** Visitable accept overrides */
@@ -22,7 +31,8 @@ namespace commands {
         std::cout << "List of commands not implemented yet" << std::endl;
     }
     void Executor::visit(Creator *c) {
-        std::cout << "New command not implemented yet" << std::endl;
+        std::string query("SELECT * FROM exams;");
+        SQLiteWrapper::executeQuery(c->db(), query, commands::callback);
     }
     void Executor::visit(Lister *l) {
         std::cout << "Lister not implemented yet" << std::endl;

@@ -7,6 +7,8 @@
 
 #include <map>
 
+namespace commands {
+
 static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
     for(i=0; i<argc; i++){
@@ -39,3 +41,5 @@ static int listExams(void *NotUsed, int argc, char **argv, char **azColName) {
               << Time::hoursToString(exam.date->hour()) << std::endl;
     return 0;
 }
+
+}; // namespace commands
