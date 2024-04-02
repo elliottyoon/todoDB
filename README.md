@@ -10,9 +10,8 @@ DATETIME  YYYY-MM-DD HH:MM:SS
 ---
 
 ### Commands
-
-* `help [command0 command1 ...]=[help create list delete]` : Print documentation for specified commands.
-    1. *command_i* is a console command (i.e. one of `help`, `create`, `list`, `delete`).
+* `help [command0 command1 ...]=[help create list delete]` : Print documentation for specified commands. Note the command list argument defaults to all commands.
+    1. *command_i* is a console command (i.e. one of `help`, `create`, `list`, `delete`).";
 * `quit` : Exit the console.
 * `new exam` : Create exam. 
 * `delete [class]` : Delete an item from a given class.
