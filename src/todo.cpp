@@ -4,6 +4,7 @@ int main(int argc, char **argv) {
     sqlite3 *db;
     char *zErrMsg = 0; 
     int rc;
+
     if( argc!=3 ){
         fprintf(stderr, "Usage: %s DATABASE SQL-STATEMENT\n", argv[0]);
         return(1);
@@ -15,11 +16,15 @@ int main(int argc, char **argv) {
         sqlite3_close(db);
         return(1);
     }
-    rc = sqlite3_exec(db, "SELECT * FROM exams;", callback, 0, &zErrMsg);
+    rc = sqlite3_exec(db, argv[2], callback, 0, &zErrMsg);
     if( rc!=SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
     }
+    rc = sqlite3_exec(db, "SELECT * FROM exams;", list_exams, 0, &zErrMsg);
+    rc = sqlite3_exec(db, "SELECT * FROM assignments;", list_exams, 0, &zErrMsg);
+
+
     sqlite3_close(db);
     return 0;
 };
