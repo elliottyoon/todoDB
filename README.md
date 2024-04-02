@@ -1,4 +1,4 @@
-Note: To compile on MacOS use `g++ src/todo.cpp -lsqlite3 -std=c++17` 
+Note: To compile on MacOS use `g++ src/main.cpp -lsqlite3 -std=c++17` 
 
 ---
 DATETIME  YYYY-MM-DD HH:MM:SS
