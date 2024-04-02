@@ -13,16 +13,18 @@ namespace commands {
 
 class SQLiteWrapper {
     public:
-        SQLiteWrapper() {}
-        SQLiteWrapper(const SQLiteWrapper &&sql) 
-            : db_(sql.db_) {};
-        ~SQLiteWrapper() {
-            sqlite3_close(db_);
-        }
+        SQLiteWrapper() = default;
+        ~SQLiteWrapper() { sqlite3_close(db_); }
+
+        SQLiteWrapper(const SQLiteWrapper &&sql) : db_(sql.db_) {};
         SQLiteWrapper(const SQLiteWrapper &) = delete;
         SQLiteWrapper& operator=(const SQLiteWrapper &) = delete;
-
-        inline void Init(std::string &filename) {
+        /**
+         * @brief Initialize wrapper object with a given database file
+         * 
+         * @param filename the name of the database file
+         */
+        inline void init(std::string &filename) {
             int rc = sqlite3_open(&filename[0], &db_);
             if ( rc ) {
                 fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db_));
@@ -30,8 +32,6 @@ class SQLiteWrapper {
                 throw std::invalid_argument("Can't open database %s\n");
             }
         }
-        sqlite3 *db() { return db_; } 
-
         /**
          * @brief 
          * 
@@ -40,6 +40,9 @@ class SQLiteWrapper {
          * @param callback function that does stuff with the output of the `query` when executed
          */
         static void executeQuery(sqlite3 * const db, std::string &query, int (*callback)(void *, int, char **, char **));
+
+        sqlite3 *db() { return db_; } 
+
     private:
         sqlite3 *db_;
 };
@@ -91,5 +94,5 @@ class Executor : public Visitor {
         void visit(Lister *) override;
         void visit(Deleter *) override;
 };
-// class Create
+
 } // namespace commands

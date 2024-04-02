@@ -4,24 +4,18 @@
 #include <string>
 
 int main(int argc, char **argv) {
-    // sqlite3 *db;
-    // char *zErrMsg = 0; 
-    // int rc;
 
     if ( argc!=1 ){
         fprintf(stderr, "Usage: %s", argv[0]);
         return(1);
     }
 
-    sqlite3 *db;
+    /** Initialize databse object */
     std::string filename = "db_items.db";
     commands::SQLiteWrapper sql{};
-    sql.Init(filename);
+    sql.init(filename);
 
-
-    std::string q("SELECT * FROM exams;");
-    commands::SQLiteWrapper::executeQuery(sql.db(), q, commands::callback);
-
+    /** Console shit */
     std::string query;
     std::istringstream iss("");
     while ((std::cout << ">>> ") && std::getline(std::cin, query)) {
