@@ -73,6 +73,10 @@ class Helper : public Command {
             : Command(CommandType::HELP), args_(std::move(args)) {};
         void accept(Visitor &v) override;
         std::vector<std::string> args() { return args_; }
+        /**
+         * @brief print documentation for the command corresponding to this command
+         */
+        static std::string toString();
     private:
         std::vector<std::string> args_;
 };
@@ -83,6 +87,10 @@ class Creator : public Command {
         void accept(Visitor &v) override;
         std::vector<std::string> args() { return args_; };
         sqlite3 *db() { return db_; }
+        /**
+         * @brief print documentation for the command corresponding to this command
+         */
+        static std::string toString();
     private:
         std::vector<std::string> args_;
         sqlite3 *db_;
@@ -92,6 +100,10 @@ class Lister : public Command {
         Lister() 
             : Command(CommandType::LIST) {};
         void accept(Visitor &v) override;
+        /**
+         * @brief print documentation for the command corresponding to this command
+         */
+        static std::string toString();
     private:
 
 };
@@ -100,6 +112,10 @@ class Deleter : public Command {
         Deleter() 
             : Command(CommandType::DELETE) {};
         void accept(Visitor &v) override;
+        /**
+         * @brief print documentation for the command corresponding to this command
+         */
+        static std::string toString();
 };
 
 class Executor : public Visitor {

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <chrono>
+#include <unordered_map>
 
 #define CURR_YEAR 2024
 
@@ -9,6 +12,22 @@
 #include "callbacks.cpp"
 
 namespace commands {
+
+    std::string Helper::toString() {
+        return "`help [command0 command1 ...]=[help create list delete]`\n\
+                - Print documentation for specified commands.\n\
+                1. *command_i* is a console command (i.e. one of `help`, `create`, `list`, `delete`).";
+    }
+    std::string Creator::toString() {
+        return "TODO creator";
+    }
+    std::string Lister::toString() {
+        return "TODO lister";
+    }
+    std::string Deleter::toString() {
+        return "TODO deleter";
+    }
+
     void SQLiteWrapper::executeQuery(sqlite3 * const db, std::string &query, int (*callback)(void *, int, char **, char **)) {
         char* zErrMsg = 0;
         int rc = sqlite3_exec(db, &query[0], callback, 0, &zErrMsg);
@@ -26,31 +45,52 @@ namespace commands {
     void Lister::accept(Visitor &v) { v.visit(this); }
     void Deleter::accept(Visitor &v) { v.visit(this); }
 
+    std::unordered_map<std::string, Command::CommandType> command_name_to_type {
+        {"help", Command::CommandType::HELP},
+        {"new", Command::CommandType::CREATE},
+        {"list", Command::CommandType::LIST},
+        {"delete", Command::CommandType::DELETE}
+    };
     /** Visitor visit overrides */
     void Executor::visit(Helper *h) {
-        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[h->type()] << std::endl;
-
         if (h->args().size() == 1) // default 
         {
-            std::cout << "almost there besties" << std::endl;
+            std::cout << Helper::toString() << '\n'
+                      << Creator::toString() << '\n'
+                      << Lister::toString() << '\n'
+                      << Deleter::toString() << std::endl;
+            return;
         }
-        std::cout << "List of commands not implemented yet" << std::endl;
+        for (size_t i = 1; i < h->args().size(); i++) {
+            /** Parse individual argument */
+            std::string arg = h->args()[i];
+            for (auto &c : arg) c = std::tolower(c);
+            /** Print the correct documentation for the corresponding command */
+            switch(command_name_to_type[arg]) {
+                case Command::CommandType::HELP:
+                    std::cout << Helper::toString() << std::endl;
+                    break;
+                case Command::CommandType::CREATE:
+                    std::cout << Creator::toString() << std::endl;
+                    break;
+                case Command::CommandType::LIST:
+                    std::cout << Lister::toString() << std::endl;
+                    break;
+                case Command::CommandType::DELETE:
+                    std::cout << Deleter::toString() << std::endl;
+                    break;
+            }
+        }
+
     }
     void Executor::visit(Creator *c) {
-        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[c->type()] << std::endl;
-
         std::string query("SELECT * FROM exams;");
         SQLiteWrapper::executeQuery(c->db(), query, commands::callback);
     }
     void Executor::visit(Lister *l) {
-        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[l->type()] << std::endl;
-
         std::cout << "Lister not implemented yet" << std::endl;
     }
     void Executor::visit(Deleter *d) {
-        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[d->type()] << std::endl;
-
-
         std::cout << "Deleter not implemented yet" << std::endl;
     }
     
