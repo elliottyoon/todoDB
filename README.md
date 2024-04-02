@@ -1,0 +1,1 @@
+Note: To compile on MacOS use `g++ todo.cpp -lsqlite3` 
