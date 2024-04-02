@@ -1,18 +1,15 @@
 #pragma once
 
-#include <iostream>
 #include <string>
-#include <sqlite3.h>
+#include <chrono>
+
+#define CURR_YEAR 2024
 
 #include "callbacks.cpp"
 
 namespace commands {
-    static inline void help() {
-        std::cout << "List of Commands: WIP" << std::endl;
-    }
-    static inline void syntaxError() {
-        std::cout << "Invalid command. Type `help` for a list of valid commands" << std::endl;
-    }
+    static inline void help() { std::cout << "List of Commands: WIP" << std::endl; }
+    static inline void syntaxError() { std::cout << "Invalid command. Type `help` for a list of valid commands" << std::endl; }
 
     // change these later
     void exams(int &rc, sqlite3 *db, char *&zErrMsg) {
@@ -21,6 +18,56 @@ namespace commands {
             fprintf(stderr, "SQL error: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         }    
+    }
+
+    void createExam(int &rc, sqlite3 *db, char *&zErrMsg) {
+        /** Get Exam information */
+        std::string buffer;
+
+        std::cout << "-- Course ID: ";
+        getline(std::cin, buffer);
+        std::string course_id = buffer;
+        for (auto &c : course_id) c = toupper(c); 
+
+        std::cout << "-- Course Name: ";
+        getline(std::cin, buffer);
+        std::string course_name = buffer;
+        for (int i = 0; i < course_name.size(); i++) {
+            course_name[i] = (i == 0 || course_name[i-1] == ' ') 
+                ? toupper(course_name[i]) 
+                : tolower(course_name[i]);
+        }
+
+        std::cout << "-- Month: ";
+        getline(std::cin, buffer);
+        int month = stoi(buffer);
+        std::cout << "-- Day: ";
+        getline(std::cin, buffer);
+        int day = stoi(buffer);
+        std::cout << "-- Hour: ";
+        getline(std::cin, buffer);
+        int hour = stoi(buffer);
+        // std::cout << "-- Year: ";
+        int year = CURR_YEAR;
+        Time t{year, month, day, hour};
+
+        std::cout << "-- Description: ";
+        getline(std::cin, buffer);
+        std::string description = buffer;
+        
+        /** Create Exam object with collected information */
+        const std::string query = "INSERT INTO exams VALUES(\'" 
+                                + std::move(course_id) + "\', \'"
+                                + std::move(course_name) + "\', \'" 
+                                + t.formatDatetime() + "\', \'"
+                                + std::move(description)
+                                + "\');";
+        std::cout << query << std::endl;
+        rc = sqlite3_exec(db, &query[0], callback, 0, &zErrMsg);
+        if( rc!=SQLITE_OK ){
+            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        }   
     }
 
     // change these later

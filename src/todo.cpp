@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
         if (query == "quit" || query == "exit") break;
         if (query == "help") commands::help();
         else if (query == "exams") commands::exams(rc, db, zErrMsg);
+        else if (query == "new exam") commands::createExam(rc, db, zErrMsg);
         else commands::syntaxError();
     }
 

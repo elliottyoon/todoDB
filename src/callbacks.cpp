@@ -16,22 +16,24 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     return 0;
 }
 
-typedef struct exam_t {
-    std::string class_id;
-    std::string class_name;
+enum Item { ASSIGNMENT, EXAM };
+
+typedef struct item_t {
+    std::string course_id;
+    std::string course_name;
     std::shared_ptr<Time> date;
     std::string description;
-} exam_t;
+    Item item;
+} item_t;
 
 static int listExams(void *NotUsed, int argc, char **argv, char **azColName) {
-
-    exam_t exam = {argv[0], 
+    item_t exam = {argv[0], 
                 argv[1], 
                 std::make_shared<Time>(argv[2]),
-                argv[3]};
-
-    std::cout << exam.class_id << " "
-              << exam.class_name << ": "
+                argv[3], 
+                EXAM};
+    std::cout << exam.course_id << " "
+              << exam.course_name << ": "
               << exam.description << " on "
               << exam.date->month() << "/" << exam.date->day() << " @ " 
               << Time::hoursToString(exam.date->hour()) << std::endl;

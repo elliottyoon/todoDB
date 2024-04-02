@@ -1,8 +1,10 @@
 #pragma once
 
 #include <ctime>
+#include <fstream>
 #include <string>
 #include <stdexcept>
+#include <sstream>
 
 const std::string FORMAT = "YYYY-MM-DD HH:MM:SS";
 
@@ -17,6 +19,7 @@ class Time {
             day_ = stoi(datetime.substr(8, 10));
             hour_ = stoi(datetime.substr(11, 13));
         }
+        Time (int year, int month, int day, int hour) : year_(year), month_(month), day_(day), hour_(hour) {};
 
         int year() {
             return year_;
@@ -29,6 +32,15 @@ class Time {
         }
         int hour() {
             return hour_;
+        }
+
+        std::string formatDatetime() {
+            std::ostringstream ss("");
+            ss << year_ << "-"
+               << (month_ < 10 ? "0" : "") << month_ << "-"
+               << (day_ < 10 ? "0" : "") << day_ << " "
+               << (hour_ < 10 ? "0" : "") << hour_ << ":00:00"; 
+            return ss.str();
         }
 
         static std::string hoursToString(int hours) {
