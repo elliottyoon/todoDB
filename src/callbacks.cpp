@@ -23,9 +23,9 @@ struct {
 } exam_t;
 
 static int list_exams(void *NotUsed, int argc, char **argv, char **azColName) {
-    for (int i = 0; i < argc; i++) {
-        std::cout << "(" << azColName[i] << ", " << (argv[i] ? argv[i] : "NULL") << ")" << "\n";
-    }
-    std::cout << std::endl;
+    std::cout        << argv[0] << " " 
+              << "(" << argv[1] << "): " 
+                     << argv[3] << " @ " 
+                     << argv[2] << std::endl;
     return 0;
 }
