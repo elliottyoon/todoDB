@@ -1,4 +1,6 @@
 #include "callbacks.cpp"
+#include "commands.cpp"
+#include <string>
 
 int main(int argc, char **argv) {
     sqlite3 *db;
@@ -21,19 +23,17 @@ int main(int argc, char **argv) {
         sqlite3_close(db);
         return(1);
     }
-    // maybe wrap this in a function or something vvvv
-    rc = sqlite3_exec(db, "SELECT * FROM exams;", list_exams, 0, &zErrMsg);
-    if( rc!=SQLITE_OK ){
-        fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
-    }    
-    // ^^^^^^^
-    rc = sqlite3_exec(db, "SELECT * FROM assignments;", list_exams, 0, &zErrMsg);
-    if( rc!=SQLITE_OK ){
-        fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
+
+    std::string query;
+    while ((std::cout << ">>> ") && std::getline(std::cin, query)) {
+        if (query == "quit" || query == "exit") break;
+        if (query == "help") commands::help();
+        else if (query == "exams") commands::exams(rc, db, zErrMsg);
+        else commands::syntaxError();
     }
 
+
+    // maybe wrap this in a function or something vvvv
     sqlite3_close(db);
     return 0;
 };

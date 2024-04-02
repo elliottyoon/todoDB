@@ -1,9 +1,10 @@
 #pragma once
+
+#include "time.cpp"
+
 #include <sqlite3.h>
 #include <iostream>
 
-#include <ctime>
-#include <string>
 #include <map>
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName){
@@ -15,17 +16,24 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     return 0;
 }
 
-struct {
+typedef struct exam_t {
     std::string class_id;
     std::string class_name;
-    std::time_t date;
+    std::shared_ptr<Time> date;
     std::string description;
 } exam_t;
 
-static int list_exams(void *NotUsed, int argc, char **argv, char **azColName) {
-    std::cout        << argv[0] << " " 
-              << "(" << argv[1] << "): " 
-                     << argv[3] << " @ " 
-                     << argv[2] << std::endl;
+static int listExams(void *NotUsed, int argc, char **argv, char **azColName) {
+
+    exam_t exam = {argv[0], 
+                argv[1], 
+                std::make_shared<Time>(argv[2]),
+                argv[3]};
+
+    std::cout << exam.class_id << " "
+              << exam.class_name << ": "
+              << exam.description << " on "
+              << exam.date->month() << "/" << exam.date->day() << " @ " 
+              << Time::hoursToString(exam.date->hour()) << std::endl;
     return 0;
 }
