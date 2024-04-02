@@ -16,6 +16,7 @@ namespace commands {
     std::string Helper::toString() {
         return "`help [command0 command1 ...]=[help create list delete]`\n\
                 - Print documentation for specified commands.\n\
+                - Note the command list argument defaults to all commands.\n\
                 1. *command_i* is a console command (i.e. one of `help`, `create`, `list`, `delete`).";
     }
     std::string Creator::toString() {
