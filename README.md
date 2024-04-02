@@ -1,4 +1,4 @@
-Note: To compile on MacOS use `g++ todo.cpp -lsqlite3` 
+Note: To compile on MacOS use `g++ src/todo.cpp -lsqlite3` 
 
 ---
 
