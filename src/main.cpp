@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
         if (command_args[0] == "quit") break;
         if (command_args[0] == "help")  
         {
-            commands::Helper h{};
+            commands::Helper h(std::move(command_args));
             h.accept(exec);
         }
         else if (command_args[0] == "new") 
@@ -53,31 +53,6 @@ int main(int argc, char **argv) {
         else {
             commands::syntaxError();
         }
-
-
-
-        /** Insert */
-        // else if (command_args[0] == "new") {
-        //     if (command_args[1] == "exam") {                    // new exam
-        //         commands::createExam(rc, db, zErrMsg);
-        //         continue;
-        //     }
-        //     else if (command_args[1] == "assignment") {
-        //         std::cout << "new assignment command not implemented yet. sorry!" << std::endl;
-        //         continue;
-        //     }
-        // }
-
-        // /** Delete */
-
-        // /** Get */
-        // else if (command_args[0] == "list") {
-        //     std::cout << "not implemented. sorry!" << std::endl;
-        // }
-        // /** TODO: delete this. blah */
-        // else if (query == "exams") commands::exams(rc, db, zErrMsg);
-
-        /** Invalid command */
     }
     return 0;
 };

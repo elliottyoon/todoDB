@@ -6,9 +6,6 @@
 #include <string>
 #include <sqlite3.h>
 
-// debugging
-#include <iostream>
-
 namespace commands {
 
 class SQLiteWrapper {
@@ -33,7 +30,7 @@ class SQLiteWrapper {
             }
         }
         /**
-         * @brief 
+         * @brief Execute a query on a database and call a callback function on the result.
          * 
          * @param db database.
          * @param query SQL query to be executed on `db`
@@ -60,15 +57,29 @@ class Visitable {
         virtual void accept(Visitor &v) = 0;
 };
 
-class Helper : public Visitable {
+class Command : Visitable {
     public:
-        Helper() {};
-        void accept(Visitor &v) override;
+        enum CommandType { HELP, CREATE, LIST, DELETE };
+
+        Command(CommandType type) : type_(type) {};
+        CommandType type() { return type_; }
+    private:
+        CommandType type_;
 };
-class Creator : public Visitable {
+
+class Helper : public Command {
+    public:
+        Helper(std::vector<std::string> &&args) 
+            : Command(CommandType::HELP), args_(std::move(args)) {};
+        void accept(Visitor &v) override;
+        std::vector<std::string> args() { return args_; }
+    private:
+        std::vector<std::string> args_;
+};
+class Creator : public Command {
     public:
         Creator(sqlite3 *db, std::vector<std::string> &&args) 
-            : args_(std::move(args)), db_(db) {};
+            : Command(CommandType::CREATE), args_(std::move(args)), db_(db) {};
         void accept(Visitor &v) override;
         std::vector<std::string> args() { return args_; };
         sqlite3 *db() { return db_; }
@@ -76,14 +87,18 @@ class Creator : public Visitable {
         std::vector<std::string> args_;
         sqlite3 *db_;
 };
-class Lister : public Visitable {
+class Lister : public Command {
     public:
-        Lister() {};
+        Lister() 
+            : Command(CommandType::LIST) {};
         void accept(Visitor &v) override;
+    private:
+
 };
-class Deleter : public Visitable {
+class Deleter : public Command {
     public:
-        Deleter() {};
+        Deleter() 
+            : Command(CommandType::DELETE) {};
         void accept(Visitor &v) override;
 };
 

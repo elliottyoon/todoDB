@@ -28,16 +28,29 @@ namespace commands {
 
     /** Visitor visit overrides */
     void Executor::visit(Helper *h) {
+        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[h->type()] << std::endl;
+
+        if (h->args().size() == 1) // default 
+        {
+            std::cout << "almost there besties" << std::endl;
+        }
         std::cout << "List of commands not implemented yet" << std::endl;
     }
     void Executor::visit(Creator *c) {
+        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[c->type()] << std::endl;
+
         std::string query("SELECT * FROM exams;");
         SQLiteWrapper::executeQuery(c->db(), query, commands::callback);
     }
     void Executor::visit(Lister *l) {
+        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[l->type()] << std::endl;
+
         std::cout << "Lister not implemented yet" << std::endl;
     }
     void Executor::visit(Deleter *d) {
+        std::cout << (const char*[]){"HELP", "CREATE", "LIST", "DELETE"}[d->type()] << std::endl;
+
+
         std::cout << "Deleter not implemented yet" << std::endl;
     }
     
