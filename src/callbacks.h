@@ -1,7 +1,7 @@
 #pragma once 
 
 #include <iostream>
-#include "time.cpp"
+#include "time.h"
 
 namespace commands {
 

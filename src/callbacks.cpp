@@ -1,7 +1,7 @@
 #pragma once
 
 #include "commands.cpp"
-#include "time.cpp"
+#include "time.h"
 
 #include <sqlite3.h>
 #include <iostream>
@@ -56,11 +56,13 @@ void completeItem(item_t &item) {
     if (item.date == nullptr) 
     {   
         std::cout << "--- Date (MM/DD or month day) ";
+        buffer.clear();
         getline(std::cin, buffer);
         std::istringstream iss(buffer);
         std::vector<std::string> mm_dd(2);
         for (int i = 0; i < 2; i++) {
-            char delim = (buffer.find(('/') != std::string::npos) ? '/' : ' ');
+            char delim = ((buffer.size() == 5 && buffer[2] == '/') 
+                ? '/' : ' ');
             std::getline(iss, buffer, delim);
             mm_dd[i] = buffer;
         }

@@ -87,6 +87,7 @@ namespace commands {
     }
     void Executor::visit(Creator *c) {
         /** TODO: support partial creation from CLI */
+        /** TODO: argv[1] should be EXAM or ASSIGNMENT, set type of item using this */
         commands::item_t item;
         completeItem(item);
         
