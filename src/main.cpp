@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
         }
         else if (command_args[0] == "new") 
         {
+            // add support for bypassing menu vvv 
+            // if (command_args.size() != 1)
             commands::Creator c(sql.db(), std::move(command_args));
             c.accept(exec);
         }

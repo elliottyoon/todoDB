@@ -4,12 +4,13 @@
 #include <cctype>
 #include <string>
 #include <chrono>
+#include <iostream>
 #include <unordered_map>
 
 #define CURR_YEAR 2024
 
 #include "commands.h"
-#include "callbacks.cpp"
+#include "callbacks.h"
 
 namespace commands {
 
@@ -85,8 +86,12 @@ namespace commands {
 
     }
     void Executor::visit(Creator *c) {
-        std::string query("SELECT * FROM exams;");
-        SQLiteWrapper::executeQuery(c->db(), query, commands::callback);
+        /** TODO: support partial creation from CLI */
+        commands::item_t item;
+        completeItem(item);
+        
+        // std::string query("SELECT * FROM exams;");
+        // SQLiteWrapper::executeQuery(c->db(), query, commands::callback);
     }
     void Executor::visit(Lister *l) {
         std::cout << "Lister not implemented yet" << std::endl;

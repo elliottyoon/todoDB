@@ -1,11 +1,13 @@
 #pragma once
 
+#include "commands.cpp"
 #include "time.cpp"
 
 #include <sqlite3.h>
 #include <iostream>
 
 #include <map>
+#include <sstream>
 
 namespace commands {
 
@@ -18,15 +20,6 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     return 0;
 }
 
-enum ItemType { ASSIGNMENT, EXAM };
-
-typedef struct item_t {
-    std::string course_id;
-    std::string course_name;
-    std::shared_ptr<Time> date;
-    std::string description;
-    ItemType type;
-} item_t;
 
 static int listExams(void *NotUsed, int argc, char **argv, char **azColName) {
     item_t exam = {argv[0], 
@@ -61,13 +54,26 @@ void completeItem(item_t &item) {
         for (auto &c : item.course_name) { c = toupper(c); }
     }
     if (item.date == nullptr) 
-    {
-        switch(item.)
+    {   
+        std::cout << "--- Date (MM/DD or month day) ";
+        getline(std::cin, buffer);
+        std::istringstream iss(buffer);
+        std::vector<std::string> mm_dd(2);
+        for (int i = 0; i < 2; i++) {
+            char delim = (buffer.find(('/') != std::string::npos) ? '/' : ' ');
+            std::getline(iss, buffer, delim);
+            mm_dd[i] = buffer;
+        }
+        item.date = std::make_shared<Time>(CURR_YEAR, mm_dd[0], mm_dd[1], 
+                                           (item.type == ItemType::EXAM));
     }
     if (item.description.empty()) 
     {
-
+        std::cout << "--- Description: ";
+        getline(std::cin, buffer);
+        item.description = buffer;
     }
+    item.toString();
 }
 
 }; // namespace commands
