@@ -18,14 +18,14 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     return 0;
 }
 
-enum Item { ASSIGNMENT, EXAM };
+enum ItemType { ASSIGNMENT, EXAM };
 
 typedef struct item_t {
     std::string course_id;
     std::string course_name;
     std::shared_ptr<Time> date;
     std::string description;
-    Item item;
+    ItemType type;
 } item_t;
 
 static int listExams(void *NotUsed, int argc, char **argv, char **azColName) {
@@ -40,6 +40,34 @@ static int listExams(void *NotUsed, int argc, char **argv, char **azColName) {
               << exam.date->month() << "/" << exam.date->day() << " @ " 
               << Time::hoursToString(exam.date->hour()) << std::endl;
     return 0;
+}
+
+void completeItem(item_t &item) {
+    std::string buffer;
+
+    if (item.course_id.empty()) 
+    {
+        std::cout << "--- Course ID: ";
+        getline(std::cin, buffer);
+        item.course_id = buffer;
+        for (auto &c : item.course_id) { c = toupper(c); }
+    }
+    if (item.course_name.empty()) 
+    {
+        /** TODO: create auxiliary table to map course_id to course_name */
+        std::cout << "--- Course Name: ";
+        getline(std::cin, buffer);
+        item.course_name = buffer;
+        for (auto &c : item.course_name) { c = toupper(c); }
+    }
+    if (item.date == nullptr) 
+    {
+        switch(item.)
+    }
+    if (item.description.empty()) 
+    {
+
+    }
 }
 
 }; // namespace commands
