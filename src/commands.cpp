@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <csetjmp>
 #include <string>
 #include <chrono>
 #include <iostream>
@@ -31,6 +32,14 @@ namespace commands {
     }
 
     void SQLiteWrapper::executeQuery(sqlite3 * const db, std::string &query, int (*callback)(void *, int, char **, char **)) {
+        char* zErrMsg = 0;
+        int rc = sqlite3_exec(db, &query[0], callback, 0, &zErrMsg);
+        if( rc!=SQLITE_OK ){
+            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        }   
+    }
+    void SQLiteWrapper::executeQuery(sqlite3 * const db, std::string query, int (*callback)(void *, int, char **, char **)) {
         char* zErrMsg = 0;
         int rc = sqlite3_exec(db, &query[0], callback, 0, &zErrMsg);
         if( rc!=SQLITE_OK ){
@@ -89,12 +98,22 @@ namespace commands {
         /** TODO: support partial creation from CLI */
         /** TODO: argv[1] should be EXAM or ASSIGNMENT, set type of item using this */
         commands::item_t item;
+        if (c->args().size() >= 2) 
+        { 
+            std::string type = c->args()[1];
+            for (char &c : type) { c = toupper(c); }
+            if (type == "EXAM" || type == "EX") { item.type = ItemType::EXAM; }
+            else if (type == "ASSIGNMENT" || type == "HW") { item.type = ItemType::ASSIGNMENT; }
+        }
+        /** Open selection menu interface for user */
         completeItem(item);
-        
-        // std::string query("SELECT * FROM exams;");
-        // SQLiteWrapper::executeQuery(c->db(), query, commands::callback);
+        /** Execute query to insert tuple corresponding to `item` into the specified table. */
+        auto query = item.generateQuery();
+        SQLiteWrapper::executeQuery(c->db(), item.generateQuery(), commands::callback);
     }
     void Executor::visit(Lister *l) {
+        SQLiteWrapper::executeQuery(l->db(), "SELECT * FROM EXAMS;", commands::callback);
+        SQLiteWrapper::executeQuery(l->db(), "SELECT * FROM ASSIGNMENTS;", commands::callback);
         std::cout << "Lister not implemented yet" << std::endl;
     }
     void Executor::visit(Deleter *d) {
@@ -108,56 +127,6 @@ namespace commands {
     //         fprintf(stderr, "SQL error: %s\n", zErrMsg);
     //         sqlite3_free(zErrMsg);
     //     }    
-    // }
-
-    // void createExam(int &rc, sqlite3 *db, char *&zErrMsg) {
-    //     /** Get Exam information */
-    //     std::string buffer;
-
-    //     std::cout << "-- Course ID: ";
-    //     getline(std::cin, buffer);
-    //     std::string course_id = buffer;
-    //     for (auto &c : course_id) c = toupper(c); 
-
-    //     std::cout << "-- Course Name: ";
-    //     getline(std::cin, buffer);
-    //     std::string course_name = buffer;
-    //     for (int i = 0; i < course_name.size(); i++) {
-    //         course_name[i] = (i == 0 || course_name[i-1] == ' ') 
-    //             ? toupper(course_name[i]) 
-    //             : tolower(course_name[i]);
-    //     }
-
-    //     std::cout << "-- Month: ";
-    //     getline(std::cin, buffer);
-    //     int month = stoi(buffer);
-    //     std::cout << "-- Day: ";
-    //     getline(std::cin, buffer);
-    //     int day = stoi(buffer);
-    //     std::cout << "-- Hour: ";
-    //     getline(std::cin, buffer);
-    //     int hour = stoi(buffer);
-    //     // std::cout << "-- Year: ";
-    //     int year = CURR_YEAR;
-    //     Time t{year, month, day, hour};
-
-    //     std::cout << "-- Description: ";
-    //     getline(std::cin, buffer);
-    //     std::string description = buffer;
-        
-    //     /** Create Exam object with collected information */
-    //     const std::string query = "INSERT INTO exams VALUES(\'" 
-    //                             + std::move(course_id) + "\', \'"
-    //                             + std::move(course_name) + "\', \'" 
-    //                             + t.formatDatetime() + "\', \'"
-    //                             + std::move(description)
-    //                             + "\');";
-    //     std::cout << query << std::endl;
-    //     rc = sqlite3_exec(db, &query[0], callback, 0, &zErrMsg);
-    //     if( rc!=SQLITE_OK ){
-    //         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-    //         sqlite3_free(zErrMsg);
-    //     }   
     // }
 
 } // namespace op

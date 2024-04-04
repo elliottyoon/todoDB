@@ -37,6 +37,7 @@ class SQLiteWrapper {
          * @param callback function that does stuff with the output of the `query` when executed
          */
         static void executeQuery(sqlite3 * const db, std::string &query, int (*callback)(void *, int, char **, char **));
+        static void executeQuery(sqlite3 * const db, std::string query, int (*callback)(void *, int, char **, char **));
 
         sqlite3 *db() { return db_; } 
 
@@ -97,13 +98,17 @@ class Creator : public Command {
 };
 class Lister : public Command {
     public:
-        Lister() 
-            : Command(CommandType::LIST) {};
+        Lister(sqlite3 *db, std::vector<std::string> &&args) 
+            : Command(CommandType::LIST), args_(std::move(args)), db_(db) {};
         void accept(Visitor &v) override;
+        std::vector<std::string> args() { return args_; }
+        sqlite3 *db() { return db_; }
         /**
          * @brief print documentation for the command corresponding to this command
          */
         static std::string toString();
+        std::vector<std::string> args_;
+        sqlite3 *db_;
     private:
 
 };
